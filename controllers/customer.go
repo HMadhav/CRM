@@ -26,8 +26,8 @@ func GetCustomers(w http.ResponseWriter, r *http.Request) {
 
 	cursor, err := customerCollection.Find(ctx, bson.M{})
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := models.CustomerResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
+		w.WriteHeader(http.StatusNotFound)
+		response := models.CustomerResponse{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
@@ -59,8 +59,8 @@ func GetCustomer(w http.ResponseWriter, r *http.Request) {
 	var customer models.Customer
 	err := customerCollection.FindOne(ctx, bson.M{"id": objId}).Decode(&customer)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := models.CustomerResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
+		w.WriteHeader(http.StatusNotFound)
+		response := models.CustomerResponse{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
@@ -132,7 +132,17 @@ func UpdateCustomer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := customerCollection.UpdateOne(ctx, bson.M{"id": objId}, bson.M{"$set": customer})
+	var updatedCustomer models.Customer
+	err := customerCollection.FindOneAndUpdate(ctx, bson.M{"id": objId}, bson.M{"$set": customer}).Decode(&updatedCustomer)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		response := models.CustomerResponse{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	var updatedDocument models.Customer
+	err = customerCollection.FindOne(ctx, bson.M{"id": objId}).Decode(&updatedDocument)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := models.CustomerResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
@@ -140,20 +150,8 @@ func UpdateCustomer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var updatedCustomer models.Customer
-	if result.MatchedCount == 1 {
-		err := customerCollection.FindOne(ctx, bson.M{"id": objId}).Decode(&updatedCustomer)
-
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			response := models.CustomerResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
-			json.NewEncoder(w).Encode(response)
-			return
-		}
-	}
-
 	w.WriteHeader(http.StatusOK)
-	response := models.CustomerResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": updatedCustomer}}
+	response := models.CustomerResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": updatedDocument}}
 	json.NewEncoder(w).Encode(response)
 
 }
@@ -171,8 +169,8 @@ func DeleteCustomer(w http.ResponseWriter, r *http.Request) {
 	result, err := customerCollection.DeleteOne(ctx, bson.M{"id": objId})
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := models.CustomerResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
+		w.WriteHeader(http.StatusNotFound)
+		response := models.CustomerResponse{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
