@@ -8,7 +8,7 @@
 ### Steps to run the project
 
 1. Clone the repo
-2. Make sure you have Go and MongoDB installed 
+2. Make sure you have Go and MongoDB installed(Here i have used mongodb Atlas free tier) 
 3. install all the pkg (`go mod tidy`)
 4. create a **.env** file in the root of project
 5. Past the below code in **.env** file and provide the Username and password.
