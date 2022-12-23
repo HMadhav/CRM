@@ -10,4 +10,4 @@
 5. Run the below command in root of your project.
    > `go run main.go`
 6. You can import the postman collection(`CRM.postman_collection.json`) attached in this project to test the API endpoints.
-7. Not using `io/ioutil` because it's depricated.
+7. Not using `io/ioutil` It looks like it's depricated.
