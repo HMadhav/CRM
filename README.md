@@ -1,6 +1,6 @@
 # CRM
 
-###Steps to run the project
+### Steps to run the project
 
 1. Clone the repo
 2. install all the dependency (``go mod tidy``)
