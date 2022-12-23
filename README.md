@@ -1,5 +1,10 @@
 # CRM
 
+### Requirements 
+
+1. GO
+2. MongoDB
+
 ### Steps to run the project
 
 1. Clone the repo
