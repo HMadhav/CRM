@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/HMadhav/CRM/controllers"
 	"github.com/gorilla/mux"
 )
@@ -14,6 +16,7 @@ func Routes() *mux.Router {
 	router.HandleFunc("/customers", controllers.AddCustomer).Methods("POST")
 	router.HandleFunc("/customers/{id}", controllers.UpdateCustomer).Methods("PUT")
 	router.HandleFunc("/customers/{id}", controllers.DeleteCustomer).Methods("DELETE")
+	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./static"))))
 
 	return router
 }
